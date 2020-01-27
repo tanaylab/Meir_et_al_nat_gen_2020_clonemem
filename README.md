@@ -38,5 +38,5 @@ source("Meir_et_al_2020_nat_gen_functions.r")
 
 
 a link to vignette:
-https://tanaylab.github.io/Meir_et_al_nat_gen_2020_clonemem/scRNA_cellCycle_Vignette.html
+https://tanaylab.github.io/Meir_et_al_nat_gen_2020_clonemem/scRNA_cellCycle_Normalization.html
 
