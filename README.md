@@ -1,13 +1,4 @@
----
-title: "Clonal maintenance of transcriptional and epigenetic states in cancer cells"
-author: "Zohar Meir"
-date: "January 27, 2020"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# Clonal maintenance of transcriptional and epigenetic states in cancer cells
 
 ## Summary
 This reposiroty contains three parts of analysis performed in Meir et al. - Expression, Dna methylation and Hic.
