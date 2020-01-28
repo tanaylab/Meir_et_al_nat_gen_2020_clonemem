@@ -6,11 +6,13 @@
 ##
 ##
 
+# Download tables used for this analysis from our repositories
+cmem_download_meth_tables()
 
 #load dependency packages and project functions
 source("Meir_et_al_2020_nat_gen_functions.r")
 
-#load whole genome DNA-methylation of clones (unaffected Cytosines during following bisulfilte conversion)
+#load whole genome DNA-methylation of clones
 cmem_clones_meth = read.table("methylation_data/clonesMethylome_captPBAT_HCT116_WT_methCalls.txt", sep="\t", header = TRUE)
 cmem_clones_cov = read.table("methylation_data/clonesMethylome_captPBAT_HCT116_WT_coverage.txt", sep="\t", header = TRUE)
 
@@ -31,6 +33,7 @@ cmem_clones_metadata = read.csv("methylation_data/Supplementary_Table5_clonesMet
 
 #load cc independent gene modules
 cc_independent_geneModules = read.csv("expression_data/Supplementary_Table3_ccIndependet_geneModules.csv",row.names="gene")
+
 
 #download and initialize a hg19 environment for analysis with "misha" packages
 # NOTE: this will download the assembly and other files into /hg19 directory, that will be generated in current directory.

@@ -13,7 +13,14 @@ source("Meir_et_al_2020_nat_gen_functions.r")
 #load M scRNA MARS-seq umi_tables (cmem_sumi_PAR: HCT116 WT cells, cmem_sumi_DKO: HCT116 DKO (DNMT1;DNMT3B) cells, cmem_sumi_WI38: WI38 cells)
 cmem_load_singles_marsSeq()
 
-#load 10x scRNA-seq umi_tables
+#downolad and load 10x scRNA-seq umi_tables
+if(!dir.exists("expression_data/10x_umi_tables/")) { dir.create(paste0(base_dir,"expression_data/10x_umi_tables/")) }
+download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/expression_data/10x_umi_tables/scRNA_H1299_10x_umiTable.txt", 
+			  destfile = "expression_data/10x_umi_tables/scRNA_H1299_10x_umiTable.txt")
+download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/expression_data/10x_umi_tables/scRNA_HCT116_DKO_10x_umiTable.txt", 
+			  destfile = "expression_data/10x_umi_tables/scRNA_HCT116_DKO_10x_umiTable.txt")
+download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/expression_data/10x_umi_tables/scRNA_HCT116_WT_10x_umiTable.txt", 
+			  destfile = "expression_data/10x_umi_tables/scRNA_HCT116_WT_10x_umiTable.txt")
 cmem_sumi_10x_PAR = read.table("expression_data/10x_umi_tables/scRNA_HCT116_WT_10x_umiTable.txt",sep="\t", check.names=FALSE)
 cmem_sumi_10x_DKO = read.table("expression_data/10x_umi_tables/scRNA_HCT116_DKO_10x_umiTable.txt",sep="\t", check.names=FALSE)
 cmem_sumi_10x_H1299 = read.table("expression_data/10x_umi_tables/scRNA_H1299_10x_umiTable.txt",sep="\t", check.names=FALSE)
