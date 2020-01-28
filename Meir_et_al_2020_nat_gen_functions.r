@@ -11,6 +11,7 @@
 
 # Tanay group packages
 require (tgstat)
+require (misha)
 
 # Other packages
 require(zoo)
