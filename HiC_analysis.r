@@ -314,6 +314,8 @@ cmem_plot_TAD_screen_over_permutation (fig_nm_ecdf = "WI38_TAD_screen_over_permu
 #
 ######  step 3.2.3 - Plot interesting examples with Shaman package.
 #
+require(shaman)
+#
 # showing one example - the B-globins region
 tad_to_plot = "TAD_523"
 # plot expression in clones
