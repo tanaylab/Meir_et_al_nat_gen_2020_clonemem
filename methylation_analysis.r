@@ -6,11 +6,11 @@
 ##
 ##
 
-# Download tables used for this analysis from our repositories
-cmem_download_meth_tables()
-
 #load dependency packages and project functions
 source("Meir_et_al_2020_nat_gen_functions.r")
+
+# Download tables used for this analysis from our repositories
+cmem_download_meth_tables()
 
 #load whole genome DNA-methylation of clones
 cmem_clones_meth = read.table("methylation_data/clonesMethylome_captPBAT_HCT116_WT_methCalls.txt", sep="\t", header = TRUE)
