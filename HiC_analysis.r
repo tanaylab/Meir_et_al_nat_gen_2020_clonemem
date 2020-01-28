@@ -10,12 +10,18 @@
 # load dependency packages and project functions
 source("Meir_et_al_2020_nat_gen_functions.r")
 
+# Download additional tables used for this analysis
+cmem_download_hic_tables()
+
 # download and initialize a hg19 environment for analysis with "misha" packages
 #  NOTE: this will download the assembly and other files into /hg19 directory, that will be generated in current directory.
 #  NOTE: this will take ~5 minutes.
 #  NO WORRIES: If you already have an hg19 database, it wouldn't download it again.
 cmem_generate_hg19_misha_db ()
-# now download 2 tracks (a smaller one with insulation score per region, and a bigger one with raw contact counts)
+
+
+# now download 2 tracks from our website (a smaller one with insulation score per region, and a bigger one with raw contact counts)
+# IMPORTANT!: after downloading those 2 tracks, put them in the hg19/ misha databases you have just created
 name_of_insulation_data_track = "HCT116_hic_notMerged_insulation_1e3"
 name_of_raw_data_track = "HCT116_hic_notMerged"
 download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/misha_tracks/HCT116_hic_notMerged_insulation_1e3.track.zip", 
@@ -29,9 +35,9 @@ unzip(zipfile = paste0("hg19/",name_of_raw_data_track,".track.zip"),
 gsetroot("hg19/")
 gdb.reload()
 
-# load TAD borders and insulation as obtained eventually from module 3.1 and alaysis of tracks
-tads_table = read.csv ("HiC_data/HCT116_TAD_borders.csv", row.names = 1)
-insulation_table = read.csv ("HiC_data/HCT116_insulation_table.csv", row.names = 1)
+# load TAD borders and insulation as obtained eventually from module 3.1 and analysis of observed contacts
+tads = read.csv ("HiC_data/HCT116_TAD_borders.csv", row.names = 1)
+hct_ins_1e3 = read.csv ("HiC_data/HCT116_insulation_table.csv", row.names = 1)
 
 
 
