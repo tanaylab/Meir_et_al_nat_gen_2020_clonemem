@@ -3367,7 +3367,7 @@ cmem_plot_color_bar <- function (vals, cols, fig_fn=NULL, title="",
 #################################################################################################################
 cmem_download_hic_tables <- function (base_dir = "./")
 {
-if(!dir.exists(paste0(base_dir,"HiC_data/")) dir.create(paste0(base_dir,"HiC_data/"))
+if ( !dir.exists(paste0(base_dir,"HiC_data/")) ) { dir.create(paste0(base_dir,"HiC_data/")) }
 hic_table_nms = c("HiC_data/A549_clones_gene_to_TAD_correlation.csv", "HiC_data/A549_clones_gene_to_permuteTAD_correlation.csv",
 				"HiC_data/HCT116_clones_gene_to_TAD_correlation.csv", "HiC_data/HCT116_clones_gene_to_permuteTAD_correlation.csv",
 				"HiC_data/WI38_clones_gene_to_TAD_correlation.csv","HiC_data/WI38_clones_gene_to_permuteTAD_correlation.csv")
@@ -3388,7 +3388,7 @@ download.file(url = paste0( "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_a
 #################################################################################################################
 cmem_download_meth_tables <- function (base_dir = "./")
 {
-if(!dir.exists(paste0(base_dir,"methylation_data/")) dir.create(paste0(base_dir,"methylation_data/"))
+if ( !dir.exists(paste0(base_dir,"methylation_data/")) ) { dir.create(paste0(base_dir,"methylation_data/")) }
 methylation_table_nms = c("methylation_data/CGcontent500_per_CpG_hg19.csv", "methylation_data/clonesMethylome_captPBAT_HCT116_WT_onTarget_coverage.csv",
 						  "methylation_data/clonesMethylome_captPBAT_HCT116_WT_onTarget_methCalls.csv", "methylation_data/scMethylome_wgPBAT_HCT116_DKO.csv",
 						  "methylation_data/clonesMethylome_captPBAT_HCT116_WT_coverage.txt", "methylation_data/clonesMethylome_captPBAT_HCT116_WT_methCalls.txt")
