@@ -397,7 +397,7 @@ epipolymorphism_df = data.frame(m = average_m,
 						 dev_per = deviation_from_persistency)
 partially_methylated_cpgs =  (meth6_60_metadata$pool_e > 0.3) & (meth6_60_metadata$pool_e < 0.7)
 hot_cpgs =  deviation_from_persistency > 3   & partially_methylated_cpgs
-cold_cpgs = deviation_from_persistency < 0.3 & partially_methylated_cpgs
+cold_cpgs = (abs(deviation_from_persistency) < 0.3) & partially_methylated_cpgs
 epipolymorphism_df$regime = c("normal","hot","cold")[ifelse(hot_cpgs,2,ifelse(cold_cpgs,3,1))]
 cmem_plot_epipolymorphism (ep_df = epipolymorphism_df,
 						   fig_nm = "./comparison_of_DNAmethylation_variance_models.png",
