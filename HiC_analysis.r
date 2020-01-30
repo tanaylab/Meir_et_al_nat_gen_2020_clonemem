@@ -24,14 +24,12 @@ cmem_generate_hg19_misha_db ()
 # IMPORTANT!: after downloading those 2 tracks, put them in the hg19/ misha databases you have just created
 name_of_insulation_data_track = "HCT116_hic_notMerged_insulation_1e3"
 name_of_raw_data_track = "HCT116_hic_notMerged"
-download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/misha_tracks/HCT116_hic_notMerged_insulation_1e3.track.zip", 
-			  destfile = paste0("hg19/",name_of_insulation_data_track,".track.zip"))
-download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/misha_tracks/HCT116_hic_notMerged.track.zip", 
-			  destfile = paste0("hg19/",name_of_raw_data_track,".track.zip"))		  
-unzip(zipfile = paste0("hg19/",name_of_insulation_data_track,".track.zip"),
-	  file = paste0("hg19/",name_of_insulation_data_track,".track"))
-unzip(zipfile = paste0("hg19/",name_of_raw_data_track,".track.zip"),
-	  file = paste0("hg19/",name_of_raw_data_track,".track"))
+download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/misha_tracks/HCT116_hic_notMerged_insulation_1e3.track.gz", 
+			  destfile = paste0("hg19/",name_of_insulation_data_track,".track.gz"))
+download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/Meir_et_al_NatGen_2020/misha_tracks/HCT116_hic_notMerged.track.gz", 
+			  destfile = paste0("hg19/",name_of_raw_data_track,".track.gz"))		  
+unzip(zipfile = paste0("hg19/",name_of_insulation_data_track,".track.gz"))
+unzip(zipfile = paste0("hg19/",name_of_raw_data_track,".track.gz"))
 gsetroot("hg19/")
 gdb.reload()
 
