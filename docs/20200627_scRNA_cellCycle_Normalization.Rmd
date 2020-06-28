@@ -2,44 +2,53 @@
 title: "Using MetaCell to define cell-cycle dependent and independent transcriptional heterogeneity"
 author: "Zohar Meir"
 date: "2020-01-27"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Running metacell on a whole-organism dataset}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  cache=TRUE,
   comment = "#>"
 )
 ```
+## The problem
 
-In this note we examplify the application of MetaCell package to identify gene co-varition in scRNA-seq data of the HCT116 colorectal cancer cell-line, which is indepent of the cell-cycle.
+In this note we exemplify the application of MetaCell package to identify gene co-variation in scRNA-seq data of the HCT116 colorectal cancer cell-line, which is independent of the cell-cycle.
 
-Cell-cycle associated expression is perhaps the most common feature to dominate transcriptional heterogeneity in scRNA databases (at least those that cover proliferative cell populations). Whereas the cell-cycle machniery is largely conserved, its transcrtiptional signature can vary greatly between different biological systems, mainly due to different replication time-scales and different fractions of proliferating cells.
+Cell-cycle associated expression is perhaps the most common feature to dominate transcriptional heterogeneity in scRNA databases (at least those that cover proliferative cell populations). Whereas the cell-cycle machinery is largely conserved, its transcrtiptional signature can vary greatly between different biological systems, mainly due to different replication time-scales and different fractions of proliferating cells.
 
-So why not simply normalize it out? One common routine of exploring transctiptional heterogeinity in single cell RNA-seq data is finding gene correlation in normalized expression matrices. The main issue with crude normalization of such datasets are that raw UMI counts are sparse, and scaling them by any model which is predicting background trends introduces strong biases. The cycling of a cell is inherently linked to its mRNA content, and therefore is highly susecptible for various biases during normaliztion of raw UMI counts.
+## Why not normalization?
 
-In this vignette we wished to avoid normalization of gene counts and then computing of their correlation scores, and developed a startegy that is using the Metacell analytic platform (Baran et al., Genomee bio. 2019) to estimate to the degree of correlation between any gene pair and test how much of this correlation stems from cell-cycle trends. 
+So why not simply normalize it out? One common routine of exploring transcriptional heterogeneity in single cell RNA-seq data is finding gene correlation in normalized expression matrices. The main issue with crude normalization of such datasets are that raw UMI counts are sparse, and scaling them by any model which is predicting background trends introduces strong biases. The cycling of a cell is inherently linked to its mRNA content, and therefore is highly susceptible for various biases during normalization of raw UMI counts.
 
-We can summarize the strategy we used to achieve this into two main steps:
+<!-- give example of the biases -->
+
+## Our strategy
+
+In this vignette we wished to avoid normalization of gene counts and then computing their correlation scores, and developed a strategy that is using the Metacell analytic platform ([Baran et al., Genomee bio. 2019](https://doi.org/10.1186/s13059-019-1812-2)) to estimate the degree of correlation between any gene pair and test how much of this correlation stems from cell-cycle trends. 
+
+We can summarize our strategy in two main steps:
 
   1. Construct a balanced cell-to-cell KNN similarity graph (with MetaCell), based on expression of cell cycle genes only. This one will serve as the cleanest estimate we can get for similarity of cells based on their cell cycle transcriptional signatures.
 
-  2. Generate a randomized UMI vector for each cell, by sampling each gene's expression from one of its K neareast cells, as defined by the clean cell-cycle model. Gene-to-gene correlations between such randomizeded vectors are expected to preserve cell cycle related gene modules, but to completely, or almost completely eliminate correlations between genes that are co-expressed or co-repressed in a cell cycle independent fashion. 
+  2. Generate a randomized UMI vector for each cell, by sampling each gene's expression from one of its K nearest cells, as defined by the clean cell-cycle model. Gene-to-gene correlations between such randomized vectors are expected to preserve cell cycle related gene modules, but to completely, or almost completely eliminate correlations between genes that are co-expressed or co-repressed in a cell cycle independent fashion. 
 
-But little steps for little feet. let's start by installing MetaCell as described here:
+## Setting up
+
+But little steps for little feet. We will start by installing MetaCell as described here:
 https://github.com/tanaylab/metacell
 
+Then, we would load the following packages:
+
 ```{r, eval=TRUE, warning=FALSE, results='hide',include=FALSE}
-library(devtools)
 library(tgstat)
 library(tgconfig)
 library(metacell) 
-load_all("~/src/metacell")
-	
 ```
 and then load the UMI tables:
 
@@ -67,15 +76,11 @@ download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/metacell_ccVignet
 download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/metacell_ccVignette_exampleFigs/HCT116_wt_shuffling_example_maximalCorrelations.png", destfile = "HCT116_cc/example_figs/HCT116_wt_shuffling_example_maximalCorrelations.png")
 download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/metacell_ccVignette_exampleFigs/HCT116_wt_2dproj_ccModel_MKI67expression.png", destfile = "HCT116_cc/example_figs/HCT116_wt_2dproj_ccModel_MKI67expression.png")
 download.file(url = "http://www.wisdom.weizmann.ac.il/~zoharme/metacell_ccVignette_exampleFigs/HCT116_wt_total_UMI_per_metacells_MKI67expression.png", destfile = "HCT116_cc/example_figs/HCT116_wt_total_UMI_per_metacells_MKI67expression.png")
-
 ```
 
+## Find cell cycle associated genes
 
-
-
-
-
-We can now begin work on our cell-cycle model. A good starting point will be to fish out genes that have significant correlation with at least one strong cell-cycle "anchors" (i.e., MKI67, PTTG, GINS2, ACTB),and optionally, NOT correlated significantly to any gene that is a-priori assumed to be unrelated to cell-cycle (ANXA1). in order to do so, we will create a .txt table, summarizing genes that are correlated to our anchors:
+We can now begin work on our cell-cycle model. A good starting point will be to fish out genes that have significant correlation with at least one strong known cell-cycle "anchors" (i.e., MKI67, PTTG, GINS2, ACTB), and optionally, NOT correlated significantly to any gene that is a-priori assumed to be unrelated to cell-cycle (ANXA1). in order to do so, we will create a .txt table, summarizing genes that are correlated to our anchors:
 
 ```{r, eval=TRUE, warning=FALSE}
 mcell_mat_rpt_cor_anchors(mat_id="mat_wt", 
@@ -89,12 +94,7 @@ mcell_mat_rpt_cor_anchors(mat_id="mat_wt",
 # sz_cor_thresh is an optional parameter, setting the maximal allowed correlation of a gene to total cell UMI counts, in order to be included in the list.
 ```
 
-
-
-
-
-
-For crude analysis, let's take all genes that had a siginficant correlation with at least one of our anchors (so their names appear in the .txt table we have just saved), and create a MeatCell "geneSet" consiting feature genes that will help us to create the cell-cycle model:
+For crude analysis, let's take all genes that had a significant correlation with at least one of our anchors (so their names appear in the .txt table we have just saved), and create a MeatCell "geneSet" consisting feature genes that will help us to create the cell-cycle model:
 
 ```{r, eval=TRUE, warning=FALSE}
 # read table
@@ -114,12 +114,7 @@ mcell_mat_ignore_genes(new_mat_id = "mat_wt_cellCycle", mat_id = "mat_wt",
 
 ```
 
-
-
-
-
-
-Optionally, we can be real Feinschmekers and narrow the list feature genes, by looking for additional structure within it. specifically, we can use MetaCell to plot gene modules we find within it, and manually keep only those modules that contain known cell-cylce factors and display significant covariance:
+Optionally, we can be real [Faynshmekers](https://en.wiktionary.org/wiki/faynshmeker) and narrow the list feature genes, by looking for additional structure within it. Specifically, we can use MetaCell to plot gene modules we find within it, and manually keep only those modules that contain known cell-cycle factors and display significant covariance:
 
 ```{r, eval=TRUE, warning=FALSE}
 # create 24 gene clusters of geneSet
@@ -132,14 +127,7 @@ mcell_plot_gset_cor_mats(gset_id = "hct116_cellCycle",
 
 ```
 
-
-
-
-
-
-
-
-This will create a subfolder **hct116_cellCycle.gset_cors** in our figures directory, where gene-gene correlations of the *K* module will be displayed, as well as each gene correlation to total UMI per cell. go over and examine the modules, and annotate those that smell like cell-cycle.
+This will create a subfolder named **hct116_cellCycle.gset_cors** in our figures directory, where gene-gene correlations of the *K* module will be displayed, as well as each gene correlation to total UMI per cell. We will now go over and examine the modules, and annotate those that smell like cell-cycle.
 
 ```{r, eval=TRUE, warning=FALSE}
 
@@ -160,15 +148,9 @@ mcell_mat_ignore_genes(new_mat_id = "mat_wt_cellCycle_narrow", mat_id = "mat_wt"
 ![geneSet_module_15](HCT116_cc/figs/hct116_cellCycle.gset_cors/15.png){width=200px}
 ![geneSet_module_18](HCT116_cc/figs/hct116_cellCycle.gset_cors/18.png){width=200px}
 
+## Create a cell-cycle based KNN graph
 
-
-
-
-
-
-
-
-Reagrdless of whether we decided to use all cell-cycle associated geneSet (**"hct116_cellCycle"**, which will be used in this example) or a purified subset of it (**"hct116_cellCycle_narrow"**), we can now create a balanced KNN similarity graph between cells that is based on expression coming from these genes only:
+Regardless of whether we decided to use all cell-cycle associated geneSet (**"hct116_cellCycle"**, which will be used in this example) or a purified subset of it (**"hct116_cellCycle_narrow"**), we can now create a balanced KNN similarity graph between cells that is based on expression coming from these genes only:
 
 ```{r, eval=TRUE, warning=FALSE}
 
@@ -193,9 +175,11 @@ mcell_add_cgraph_from_mat_bknn(mat_id="mat_wt_cellCycle",
 
 The last step added to our database a new cell-cell graph object, named *HCT116_wt_cellCycle_graph*. It describes the similarity between all cells in our dataset, based only on the expression of genes in the *"wt_cellCycle_markers"* geneSet.
 
+### Validate our cell-cycle model
+
 However, and before we continue to the randomization step, it is a good practice to perform some sanity checks here - and try to validate that our model is indeed describing cell-cycle as we hoped.
 
-There are many different ways to approach this, but since we are using the MetaCell platform, it just make sense to create metacells that are based on our cell graph, and test whether we can position metacells along a continuum of transcriptional cell-cycle dynamics. Remember in most cases we may only succeed to model the fraction of cycling ones, which can vary between biological samples (the non-cycling cells might form a big "non-cycling" metacell). In addition, we can expect that different distributions of total mRNA content per cell to be one hallmark of our cell-cycle based metacells (but not neccassaarily, especially if sequencing of libraries is not at saturation or nearing it): 
+There are many different ways to approach this, but since we are using the MetaCell platform, it makes sense to create metacells that are based on our cell graph, and test whether we can position metacells along a continuum of transcriptional cell-cycle dynamics. Remember that in most cases we may only succeed to model the fraction of cycling ones, which can vary between biological samples (the non-cycling cells might form a big "non-cycling" metacell). In addition, we can expect different distributions of total mRNA content per cell to be one hallmark of our cell-cycle based metacells (but not necessarily, especially if sequencing of libraries is not at saturation or close to it): 
 
 ```{r, eval=TRUE, warning=FALSE}
 # add explanations here
@@ -216,7 +200,7 @@ mcell_mc_from_coclust_balanced(
 
 ```
 
-For more functions and details on plotting metacells, checkout Metacell github:
+For more functions and details on plotting metacells, checkout Metacell github repository:
 https://github.com/tanaylab/metacell
 
 
@@ -233,12 +217,9 @@ Some examples for plots to test cell cycle model:
 
 
 
-
-
-
-
-
 If you think that your model looks legit - well done, the longer step of the process is now behind us.
+
+## Find genes that are independent of cell-cycle 
 
 Provided with a good estimation for how cells are related to one another based on cell-cycle trends alone, we can now ask which genes are co-variating independently of it.
 
@@ -253,20 +234,17 @@ gene_cors_cellCycle = mcell_cgraph_norm_gcor(cgraph_id = "HCT116_wt_cellCycle_gr
 #min_gtot: a minimal threshold for total expression per gene in the downsampled matrix.
 ```
 
-
-
-
-
 the list object **gene_cors_cellCycle** now holds two equally sized gene-gene correlation matrices - **g_cor** and **r_cor**, which will contain the correlation scores between and after the randomization process, respectively.
 
-  - If the coexpression of two genes is related to cell-cycle, than we could expect that some degree of covariance between them will survive the randomization
-  - However, if coexpression patterns are unrelated to cell-cycle, correlations between genes are expected to be completely eliminated after the randomzation, (statstically, if K is large enough).
+  - If the co-expression of two genes is related to cell-cycle, than we could expect that some degree of covariance between them will survive the randomization
+  - However, if co-expression patterns are unrelated to cell-cycle, correlations between genes are expected to be completely eliminated after the randomization, (statistically, if K is large enough).
 
-We can have a supervised look into the two matrices and see whether a specific gene-gene interaction that is intersting for us was eliminated or not.   
+We can have a supervised look into the two matrices and see whether a specific gene-gene interaction that is interesting for us was eliminated or not.   
 
 Several ways of plotting may help us decide which gene pairs covariation is related to cell-cycle and which doesn't. For example:
 
 plot the **maximal** correlation score of each gene before and after the randomization:
+
 ```{r, eval=TRUE, warning=FALSE}
 #set diagonals of matrices to zero:
 diag(gene_cors_cellCycle$gcor) = 0
@@ -292,31 +270,18 @@ dev.off()
 
 
 
-
-
-
-
-
-an example for how such plot can be interperted:
-
+an example for how such plot can be interpreted:
 
 
 
 ![](HCT116_cc/example_figs/HCT116_wt_shuffling_example_maximalCorrelations.png){width=250px}
 
 
-
-
-
-
-
-
-
 It is apparent that some genes were able to maintain at least one significant correlation, and are therefore display dynamics that are, at least in part, associated with cell-cycle.
 
-still, it doesn't mean that all their transcriptional covariation are fully dependent on the cell-cyle.
+Still, it doesn't mean that all their transcriptional covariation are fully dependent on the cell-cycle.
 
-in order to have a more careful look at the cel-cycle based randomization on gene correlations, we can plot a "chimeric"" matrix (for selected genes, as in this example), comparing the original correlation value in its top triangle, and the shuffled correlation scores in the lower triangle:
+In order to have a more careful look at the cell-cycle based randomization on gene correlations, we can plot a "chimeric"" matrix (for selected genes, as in this example), comparing the original correlation value in its top triangle, and the shuffled correlation scores in the lower triangle:
 
 an example for how it can look like:
 
