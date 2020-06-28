@@ -238,6 +238,10 @@ require(glue)
 ##################################################################################################################
 
 
+# Extract UMI tables
+cmem_extract_umi_tables <- function(expression_data_fn = "expression_data/scMARSseq_umi_tables.tar.gz"){
+	system(paste("tar xvzf", expression_data_fn))		
+}
 
 # this function loads MARS-umiTables, remove spike-INs, combines and saves them into one matrix for each cell-line
 ##################################################################################################################

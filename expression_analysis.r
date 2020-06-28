@@ -10,6 +10,12 @@
 #load dependency packages and project functions
 source("Meir_et_al_2020_nat_gen_functions.r")
 
+# Extract UMI tables from tar.gz
+if (!dir.exists("expression_data/scMARSseq_umi_tables")){
+	cmem_extract_umi_tables()	
+}
+
+
 #load M scRNA MARS-seq umi_tables (cmem_sumi_PAR: HCT116 WT cells, cmem_sumi_DKO: HCT116 DKO (DNMT1;DNMT3B) cells, cmem_sumi_WI38: WI38 cells)
 cmem_load_singles_marsSeq()
 
