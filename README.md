@@ -23,5 +23,5 @@ source("Meir_et_al_2020_nat_gen_functions.r")
 
 
 a link to vignette examplifying logic of isolating cell-cycle independent variation in scRNA datasets:
-https://tanaylab.github.io/Meir_et_al_nat_gen_2020_clonemem/20200627_scRNA_cellCycle_Normalization.html
+https://tanaylab.github.io/Meir_et_al_nat_gen_2020_clonemem/scRNA_cellCycle_Normalization.html
 
