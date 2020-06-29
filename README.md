@@ -1,7 +1,7 @@
 # Clonal maintenance of transcriptional and epigenetic states in cancer cells
 
 ## Summary
-This reposiroty contains three parts of analysis performed in Meir et al. - Expression, Dna methylation and Hic.
+This reposiroty contains three parts of analysis performed in [Meir et al.](https://www.nature.com/articles/s41588-020-0645-y) - Expression, Dna methylation and Hic.
 Each part consists of a hierarchy of smaller modules and steps.
 
 ## Compilation
